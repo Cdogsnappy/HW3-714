@@ -4,11 +4,15 @@ from matplotlib import cm
 
 h = 22.5
 P = np.ones((4,4))
-b = 55
-k =(h*h)/(6*b)
+b = 5500
+k = (h*h)/(6*b)
 l = 73
 w = 160
 t = 100
+C = (58,147)
+Q = (58,103)
+T = (31,14)
+fac = [C,Q,T]
 def buildData(f1):
     d = []
     for line in f1:
@@ -49,19 +53,28 @@ def solve():
                     D[ij,ind(i,j-1)] = 1
     D*=(b/(h*h))
     times = (1,5,25,100)
-    for iter in range(t):
+    curr = 0
+    iter = 0
+    while iter < t:
         u_new = np.dot(D,u)
         u_new*=k
         u = u_new + u
         enforce_pizza_zone(u)
-        print(u)
-        if iter in times:
-            uu = np.reshape(np.power(u,.25) , (w,l))
-            fig = plt.figure()
-            ax = plt.axes(projection='3d')
-            X, Y = np.meshgrid(np.linspace(0, 1642.5, 73), np.linspace(0, 3600, 160))
-            ax.plot_surface(X, Y, uu, cmap=cm.Blues)
+        iter+=k
+        for teach in fac:
+            if u[ind(teach[0], teach[1])] > 1e-4:
+                print("Professor at " + str(teach) + " smells pizza! The time is " + str(iter))
+                fac.remove(teach)
+        if iter >= times[curr]:
+            uu = np.reshape(np.power(u,.25) , (l,w))
+            for i in range(l):
+                for j in range(w):
+                    if(vv[i,j] == 1):
+                        uu[i,j] = 0
+            plt.imshow(uu, cmap='hot', interpolation='nearest')
+            plt.title("time = " + str(times[curr]))
             plt.show()
+            curr+=1
 
 def in_range(i,j):
     return i < 73 and j < 160 and i*w + j >= 0

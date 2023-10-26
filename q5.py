@@ -22,15 +22,16 @@ def solve():
             u[index(i,j)] = uex(i,j)
     for l in range(n):
         #step 1
+        for i in range(n):
+            print("")
         b = np.dot((I + (dt/2)*D),u)
         A = (I - (dt/2)*D)
         u_star = np.linalg.solve(A,b)
 
         #step 2
-        b_2 = np.dot((I + (dt/2)*np.square(D)),u_star)
+        b_2 = np.dot((I + (dt/2)*D),u_star)
         u = np.linalg.solve(A,b_2)
     uu = np.reshape(u,(n,n))
-    print(uu)
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     X,Y = np.meshgrid(np.linspace(0,1,n),np.linspace(0,1,n))
